@@ -3,7 +3,7 @@ import styled, {keyframes} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {showSignupSuccessAlert} from "../utils/alert";
 
-export default function SignupPage({type}) {
+export default function SignupPage() {
     const [codeSent, setCodeSent] = useState(false);
     const [email, setEmail] = useState("");
     const [code, setCode] = useState("");
@@ -11,17 +11,13 @@ export default function SignupPage({type}) {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [nickname, setNickname] = useState("");
-    const navigate = useNavigate(); // ⬅️ 추가
-    const [codeMessage, setCodeMessage] = useState(""); // 인증 관련 메시지
-    const [codeMessageColor, setCodeMessageColor] = useState("white"); // 성공/실패 색상
+    const navigate = useNavigate();
+    const [codeMessage, setCodeMessage] = useState("");
+    const [codeMessageColor, setCodeMessageColor] = useState("white");
 
     const sendVerificationCode = async () => {
         try {
-            const endpoint = type === "police"
-                ? "http://localhost:8000/user-service/signup/police/email"
-                : "http://localhost:8000/user-service/signup/general/email";
-
-            const res = await fetch(endpoint, {
+            const res = await fetch("http://localhost:8000/user-service/signup/general/email", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({email}),
@@ -44,12 +40,8 @@ export default function SignupPage({type}) {
     };
 
     const verifyCode = async () => {
-        const endpoint = type === "police"
-            ? "http://localhost:8000/user-service/signup/police/emailAuth"
-            : "http://localhost:8000/user-service/signup/general/emailAuth";
-
         try {
-            const res = await fetch(endpoint, {
+            const res = await fetch("http://localhost:8000/user-service/signup/general/emailAuth", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({email, authNum: code}),
@@ -75,12 +67,9 @@ export default function SignupPage({type}) {
         if (!emailVerified) {
             return;
         }
-        const url = type === "police"
-            ? "http://localhost:8000/user-service/users/police"
-            : "http://localhost:8000/user-service/users/general";
 
         try {
-            const res = await fetch(url, {
+            const res = await fetch("http://localhost:8000/user-service/users/general", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({username: email, password, name, nickname}),
@@ -94,19 +83,18 @@ export default function SignupPage({type}) {
         }
     };
 
-
     return (
         <>
             <UnderlayPhoto/>
             <UnderlayBlack/>
             <FormWrapper>
-                <Title>{type === "police" ? "경찰 회원가입" : "일반 회원가입"}</Title>
+                <Title>일반 회원가입</Title>
 
                 <form onSubmit={handleRegister}>
                     <Row>
                         <FullInput
                             type="email"
-                            placeholder={type === "police" ? "email@police.go.kr" : "email@example.com"}
+                            placeholder="email@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -147,13 +135,12 @@ export default function SignupPage({type}) {
                                         fontSize: "0.9rem",
                                         marginTop: "0.4rem",
                                         textAlign: "right",
-                                        whiteSpace: "nowrap", // 줄바꿈 방지
-                                        width: "max-content", // 혹은 100%
+                                        whiteSpace: "nowrap",
+                                        width: "max-content",
                                     }}
                                 >
                                     {codeMessage}
                                 </div>
-
                             )}
                         </div>
                     </Row>

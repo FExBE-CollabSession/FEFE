@@ -7,11 +7,11 @@ export default function SignupSelectPage() {
     const navigate = useNavigate();
     const [isAgreed, setIsAgreed] = useState(false);
 
-    const handleMove = (path) => {
+    const handleMove = () => {
         if (!isAgreed) {
             return;
         }
-        navigate(path);
+        navigate("/auth/signup/general");
     };
 
     return (
@@ -19,21 +19,17 @@ export default function SignupSelectPage() {
             <UnderlayPhoto/>
             <UnderlayBlack/>
             <Container>
-                <Title>회원가입</Title> {/* ✅ clamp 크기 적용 */}
+                <Title>회원가입</Title>
                 <TermsAgreement onAgreeChange={(agreement) => {
                     const agreed = agreement.terms && agreement.community && agreement.personalInfo && agreement.age14;
                     setIsAgreed(agreed);
                 }}/>
                 <ButtonRow>
-                    <Button disabled={!isAgreed} onClick={() => handleMove("/auth/signup/police")}>
-                        경찰 회원가입
-                    </Button>
-                    <Button disabled={!isAgreed} onClick={() => handleMove("/auth/signup/general")}>
+                    <Button disabled={!isAgreed} onClick={handleMove}>
                         일반 회원가입
                     </Button>
                 </ButtonRow>
             </Container>
-
         </>
     );
 }
