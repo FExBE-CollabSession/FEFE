@@ -20,18 +20,17 @@ function Home() {
                 <Subtitle>함께하는 세션, 함께하는 성장</Subtitle>
                 <Description>
                     CoSession은 사용자들이 함께 학습하고 성장할 수 있는 플랫폼입니다.
-                    뉴스와 이슈를 통해 최신 정보를 얻고, 캘린더를 통해 중요한 일정을 관리하세요.
                 </Description>
                 <FeatureGrid>
                     <FeatureCard>
                         <FeatureIcon>📰</FeatureIcon>
-                        <FeatureTitle>뉴스 보기</FeatureTitle>
-                        <FeatureDesc>최신 뉴스와 이슈를 확인하세요</FeatureDesc>
+                        <FeatureTitle>개발중</FeatureTitle>
+                        <FeatureDesc>~~ 확인하세요</FeatureDesc>
                     </FeatureCard>
                     <FeatureCard>
                         <FeatureIcon>📅</FeatureIcon>
-                        <FeatureTitle>이슈 캘린더</FeatureTitle>
-                        <FeatureDesc>중요한 일정과 이벤트를 관리하세요</FeatureDesc>
+                        <FeatureTitle>개발중</FeatureTitle>
+                        <FeatureDesc>~~ 관리하세요</FeatureDesc>
                     </FeatureCard>
                     <FeatureCard>
                         <FeatureIcon>👥</FeatureIcon>

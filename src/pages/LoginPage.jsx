@@ -4,17 +4,18 @@ import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../contexts/AuthContext';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const {setAuthUser, fetchUser} = useAuth();
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         setErrorMessage('');
         try {
             const formData = new URLSearchParams();
-            formData.append('username', email);
+            formData.append('username', username);
             formData.append('password', password);
 
             const res = await fetch('http://localhost:8000/user-service/users/login', {
@@ -29,14 +30,13 @@ export default function LoginPage() {
                 const accessToken = res.headers.get('accessToken');
                 const refreshToken = res.headers.get('refreshToken');
 
-
                 if (accessToken) {
                     localStorage.setItem('accessToken', accessToken);
                     localStorage.setItem('refreshToken', refreshToken);
 
                     const json = await res.json();
-                    setAuthUser(json.data); // 상태 저장
-                    await fetchUser(); // ✅ 여기서 /users/me 호출
+                    setAuthUser(json.data);
+                    await fetchUser();
                     navigate("/");
                 }
             } else {
@@ -48,147 +48,196 @@ export default function LoginPage() {
     };
 
     return (
-        <>
-            <UnderlayPhoto/>
-            <UnderlayBlack/>
-            <FormWrapper>
-                <Title>로그인</Title>
-                <form onSubmit={handleLogin}>
-                    <Input
-                        type="email"
-                        placeholder="이메일"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        autoComplete="username"
-                    />
-                    <Input
-                        type="password"
-                        placeholder="비밀번호"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        autoComplete="current-password"
-                    />
+        <PageContainer>
+            <BackgroundGradient />
+            <LoginCard>
+                <LogoSection>
+                    <Subtitle>로그인</Subtitle>
+                </LogoSection>
+
+                <Form onSubmit={handleLogin}>
+                    <InputGroup>
+                        <Label>아이디</Label>
+                        <Input
+                            type="text"
+                            placeholder="아이디를 입력"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            autoComplete="username"
+                        />
+                    </InputGroup>
+
+                    <InputGroup>
+                        <Label>비밀번호</Label>
+                        <Input
+                            type="password"
+                            placeholder="비밀번호를 입력"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            autoComplete="current-password"
+                        />
+                    </InputGroup>
+
                     {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-                    <Button type="submit" value="로그인"/>
-                </form>
-                <JoinButton onClick={() => navigate('/auth/signup')}>
-                    회원가입하기
-                </JoinButton>
-            </FormWrapper>
-        </>
+                    
+                    <LoginButton type="submit">
+                        로그인
+                    </LoginButton>
+                </Form>
+
+                <SignupLink onClick={() => navigate('/auth/signup')}>
+                    계정이 없으신가요? 회원가입하기
+                </SignupLink>
+            </LoginCard>
+        </PageContainer>
     );
 }
 
-const hueRotate = keyframes`
+const fadeIn = keyframes`
     from {
-        filter: grayscale(30%) hue-rotate(0deg);
+        opacity: 0;
+        transform: translateY(20px);
     }
     to {
-        filter: grayscale(30%) hue-rotate(360deg);
+        opacity: 1;
+        transform: translateY(0);
     }
 `;
 
-const UnderlayPhoto = styled.div`
+const PageContainer = styled.div`
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+`;
+
+const BackgroundGradient = styled.div`
     position: fixed;
     top: 0;
     left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    background: url('https://31.media.tumblr.com/41c01e3f366d61793e5a3df70e46b462/tumblr_n4vc8sDHsd1st5lhmo1_1280.jpg');
-    background-size: cover;
-    z-index: -1;
-    animation: ${hueRotate} 6s infinite;
-    -webkit-filter: grayscale(30%);
-`;
-
-const UnderlayBlack = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     z-index: -1;
 `;
 
-const FormWrapper = styled.div`
-    width: 90%;
+const LoginCard = styled.div`
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
     max-width: 400px;
-    margin: 150px auto;
-    padding: 2rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    animation: ${fadeIn} 0.6s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
-    @media (max-width: 600px) {
-        margin: 80px auto;
-        padding: 1.5rem;
+    @media (max-width: 480px) {
+        padding: 30px 20px;
+        margin: 10px;
     }
 `;
 
-const Title = styled.h1`
-    color: white;
-    margin-bottom: 2rem;
-    font-size: clamp(1.6rem, 4vw, 2rem);
+const LogoSection = styled.div`
+    text-align: center;
+    margin-bottom: 30px;
+`;
+
+const Subtitle = styled.p`
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+`;
+
+const Form = styled.form`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+`;
+
+const InputGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+
+const Label = styled.label`
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin-left: 4px;
 `;
 
 const Input = styled.input`
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    color: white;
-    margin: 1rem 0;
-    padding: 0.5rem;
-    width: 100%;
+    padding: 15px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
     font-size: 1rem;
-    transition: 250ms background ease-in;
+    transition: all 0.3s ease;
+    background: white;
+    color: #333;
 
     &::placeholder {
-        color: rgba(255, 255, 255, 0.7);
+        color: #999;
     }
 
     &:focus {
         outline: none;
-        background: white;
-        color: black;
-
-        &::placeholder {
-            color: rgba(0, 0, 0, 0.7);
-        }
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-`;
-
-const Button = styled.input`
-    border: 1px solid white;
-    background: transparent;
-    color: white;
-    margin-top: 20px;
-    padding: 0.7rem 2rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 250ms background ease-in;
-
-    &:hover,
-    &:focus {
-        background: white;
-        color: black;
-    }
-`;
-
-const JoinButton = styled.button`
-    background: none;
-    border: none;
-    color: white;
-    margin-top: 1rem;
-    opacity: 0.6;
-    text-decoration: underline;
-    cursor: pointer;
 
     &:hover {
-        opacity: 1;
+        border-color: #b8c2cc;
+    }
+`;
+
+const LoginButton = styled.button`
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+`;
+
+const SignupLink = styled.button`
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 20px;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: #764ba2;
     }
 `;
 
@@ -197,4 +246,9 @@ const ErrorText = styled.div`
     color: #ff5a5a;
     font-size: 0.9rem;
     margin-bottom: 1rem;
+    text-align: center;
+    background: rgba(255, 90, 90, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 90, 90, 0.2);
 `;

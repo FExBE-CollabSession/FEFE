@@ -66,16 +66,16 @@ function Header() {
                             <CloseBtn onClick={() => setMenuOpen(false)}>×</CloseBtn>
                         </MobileNavHeader>
                         <li><LinkStyled to="/" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>뉴스 보기</LinkStyled></li>
-                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>이슈 캘린더</LinkStyled></li>
-                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>서비스 소개</LinkStyled></li>
+                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
+                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
+                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발 중</LinkStyled></li>
                     </NavBar>
                 ) : (
                     <NavBar>
                         <li><LinkStyled to="/" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>뉴스 보기</LinkStyled></li>
-                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>이슈 캘린더</LinkStyled></li>
-                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>서비스 소개</LinkStyled></li>
+                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
+                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
+                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                     </NavBar>
                 )}
 
