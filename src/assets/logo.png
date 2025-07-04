@@ -1,0 +1,7 @@
+<!-- 이 파일은 실제로는 PNG 이미지여야 하지만, 개발 목적으로 SVG로 대체합니다 -->
+<svg width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="50" fill="transparent"/>
+  <text x="10" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">
+    CoSession
+  </text>
+</svg> 
