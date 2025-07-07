@@ -27,6 +27,9 @@ const COLORS = [
 const cellKey = (day, time) => `${day}-${time}`;
 
 function parseTimeString(timeStr) {
+    if (!timeStr || typeof timeStr !== 'string') {
+        return { day: null, times: [] };
+    }
     const [day, range] = timeStr.split(" ");
     if (!day || !range) return { day: null, times: [] };
     let [start, end] = range.split("-").map(Number);
@@ -51,14 +54,15 @@ function Home() {
     const [timetables, setTimetables] = useState(initialTimetables);
     const [availableSubjects, setAvailableSubjects] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [myCourseIds, setMyCourseIds] = useState(new Set()); // 내가 추가한 수업 ID들
 
-    // API에서 사용자의 수업 목록을 가져오는 함수
-    const fetchMyCourses = async () => {
+    // API에서 전체 수업 목록을 가져오는 함수
+    const fetchAllCourses = async () => {
         const token = localStorage.getItem("accessToken");
         if (!token) return;
         setLoading(true);
         try {
-            const response = await fetch("/api/courses/my", {
+            const response = await fetch("/api/courses", {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -67,8 +71,10 @@ function Home() {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log("전체 수업 목록 API 응답:", data); // 디버깅용 로그
                 // API 응답 구조에 맞게 데이터 변환
                 const courses = data.data.map(course => ({
+                    id: course.id,
                     name: course.name || course.courseName,
                     professor: course.professor || course.instructor,
                     time: course.time || course.schedule,
@@ -85,30 +91,91 @@ function Home() {
         }
     };
 
+    // 사용자가 등록한 수업 목록을 가져오는 함수
+    const fetchMyCourses = async () => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+        
+        try {
+            const response = await fetch("/api/courses/my", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("내 수업 목록 API 응답:", data); // 디버깅용 로그
+                const myCourses = data.data.map(course => ({
+                    id: course.id,
+                    name: course.name || course.courseName,
+                    professor: course.professor || course.instructor,
+                    time: course.time || course.schedule,
+                    room: course.room || course.classroom,
+                }));
+                
+                // 사용자의 수업을 시간표에 추가
+                const newTimetables = { ...initialTimetables };
+                myCourses.forEach(course => {
+                    const { day, times } = parseTimeString(course.time);
+                    if (day && times.length > 0) {
+                        const usedColors = newTimetables[selectedSemester].map(s => s.color).filter(Boolean);
+                        const color = pickColor(usedColors);
+                        newTimetables[selectedSemester].push({ ...course, day, times, color });
+                    }
+                });
+                setTimetables(newTimetables);
+            }
+        } catch (error) {
+            console.error("내 수업 목록 조회 중 오류:", error);
+        }
+    };
+
     useEffect(() => {
-        fetchMyCourses();
+        fetchAllCourses();
+        fetchMyCourses(); // 사용자가 등록한 수업도 함께 로드
     }, []);
 
     const handleOpenAddModal = () => {
-        fetchMyCourses();
+        fetchAllCourses();
         setShowAddModal(true);
     };
 
-    // 시간표에 수업 추가 (병합 블록)
-    const handleAddSubject = (subject) => {
-        const { day, times } = parseTimeString(subject.time);
-        if (!day || times.length === 0) return;
-        setTimetables(prev => {
-            const current = prev[selectedSemester];
-            // 중복 방지: 이미 같은 과목이 있으면 추가 X
-            if (current.some(s => s.name === subject.name && s.day === day && s.times[0] === times[0])) return prev;
-            // 색상 중복 방지
-            const usedColors = current.map(s => s.color).filter(Boolean);
-            const color = pickColor(usedColors);
-            const newSubject = { ...subject, day, times, color };
-            return { ...prev, [selectedSemester]: [...current, newSubject] };
-        });
-        setShowAddModal(false);
+    // 시간표에 수업 추가 (백엔드 API 호출)
+    const handleAddSubject = async (subject) => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        try {
+            // 백엔드 API 호출하여 수업을 사용자 시간표에 추가
+            const response = await fetch("/api/users/add-courses", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    courseId: subject.id
+                }),
+            });
+
+            if (response.ok) {
+                alert("수업이 성공적으로 추가되었습니다!");
+                setShowAddModal(false);
+                // 사용자의 수업 목록을 다시 불러와서 시간표 업데이트
+                fetchMyCourses();
+            } else {
+                const errorData = await response.json();
+                alert(`수업 추가 실패: ${errorData.message || "알 수 없는 오류가 발생했습니다."}`);
+            }
+        } catch (error) {
+            console.error("수업 추가 중 오류:", error);
+            alert("수업 추가 중 오류가 발생했습니다.");
+        }
     };
 
     function renderTableBody() {
@@ -197,12 +264,19 @@ function Home() {
                             <LoadingText>수업 목록을 불러오는 중...</LoadingText>
                         ) : (
                             <SubjectList>
-                                {availableSubjects.map((subject, idx) => (
-                                    <SubjectItem key={idx} onClick={() => handleAddSubject(subject)}>
-                                        <strong>{subject.name}</strong> <span>({subject.professor})</span>
-                                        <SubjectTime>{subject.time} / {subject.room}</SubjectTime>
-                                    </SubjectItem>
-                                ))}
+                                {availableSubjects
+                                    .filter(subject => !myCourseIds.has(subject.id))
+                                    .map((subject, idx) => (
+                                        <SubjectItem key={idx} onClick={() => handleAddSubject(subject)}>
+                                            <strong>{subject.name}</strong> <span>({subject.professor})</span>
+                                            <SubjectTime>{subject.time} / {subject.room}</SubjectTime>
+                                        </SubjectItem>
+                                    ))}
+                                {availableSubjects.filter(subject => !myCourseIds.has(subject.id)).length === 0 && (
+                                    <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                        추가할 수 있는 수업이 없습니다.
+                                    </div>
+                                )}
                             </SubjectList>
                         )}
                         <button onClick={() => setShowAddModal(false)}>닫기</button>
