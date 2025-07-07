@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaPlus } from "react-icons/fa";
 
 const DAYS = ["월", "화", "수", "목", "금"];
-const TIMES = [9, 10, 11, 12, 1, 2, 3, 4, 5];
+const TIMES = [9, 10, 11, 12, 13, 14, 15, 16, 17];
 
 const SEMESTERS = [
     "2025년 1학기"
@@ -26,18 +26,17 @@ const COLORS = [
 
 const cellKey = (day, time) => `${day}-${time}`;
 
-function parseTimeString(timeStr) {
-    if (!timeStr || typeof timeStr !== 'string') {
-        return { day: null, times: [] };
-    }
-    const [day, range] = timeStr.split(" ");
-    if (!day || !range) return { day: null, times: [] };
-    let [start, end] = range.split("-").map(Number);
-    const startIdx = TIMES.indexOf(start);
-    const endIdx = TIMES.indexOf(end);
-    if (startIdx === -1 || endIdx === -1) return { day, times: [] };
-    const times = TIMES.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
-    return { day, times };
+function formatTimeToHHMM(str) {
+    if (!str) return '';
+    const match = str.match(/^(\d{1,2}:\d{2})/);
+    return match ? match[1] : str;
+}
+
+function parseHourMinute(str) {
+    if (!str) return NaN;
+    str = formatTimeToHHMM(str);
+    const [h, m] = str.split(":").map(Number);
+    return h + (m ? m / 60 : 0);
 }
 
 function pickColor(usedColors) {
@@ -49,14 +48,16 @@ function pickColor(usedColors) {
 }
 
 function courseToBlocks(course) {
-    // lectureDay: "월,금" → ["월", "금"]
+    console.log("courseToBlocks input:", course);
     const days = (course.lectureDay || "").split(",").map(d => d.trim());
-    const start = Number(course.startTime);
-    const end = Number(course.endTime);
-    // TIMES 배열에서 인덱스 추출
+    const start = parseHourMinute(course.startTime);
+    const end = parseHourMinute(course.endTime);
     const startIdx = TIMES.indexOf(start);
     const endIdx = TIMES.indexOf(end);
-    if (startIdx === -1 || endIdx === -1) return [];
+    if (startIdx === -1 || endIdx === -1) {
+        console.warn(`courseToBlocks: TIMES에 없는 시간! startTime=${start}, endTime=${end}, TIMES=`, TIMES);
+        return [];
+    }
     const times = TIMES.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
     return days.map(day => ({
         ...course,
