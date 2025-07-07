@@ -36,6 +36,17 @@ const Room = styled.p`
     font-size: 1rem;
     color: #555;
 `
+const Title = styled.h2`
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+`;
+
+const Info = styled.p`
+  font-size: 0.95rem;
+  color: #444;
+  margin: 2px 0;
+`;
+
 
 export default function ClassCard({ name, professor, time, room }) {
     const navigate = useNavigate();

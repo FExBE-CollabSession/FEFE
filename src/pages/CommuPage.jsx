@@ -1,8 +1,7 @@
 // ./src/pages/CommuPage.jsx
 import React from "react";
 import { Wrapper, StyledParagraph } from "./CommuPage.styles";
-import ClassCard from "../components/ClassCard"; // 상대경로 주의!
-
+import ClassCard from "../components/ClassCard"; 
 export default function CommuPage() {
   const classes = [
     {
