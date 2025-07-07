@@ -448,6 +448,8 @@ const SubjectList = styled.ul`
     margin: 24px 0 16px 0;
     padding: 0;
     list-style: none;
+    max-height: 50vh;
+    overflow-y: auto;
 `;
 const SubjectItem = styled.li`
     padding: 12px 0 8px 0;
