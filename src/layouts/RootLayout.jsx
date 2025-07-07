@@ -24,7 +24,7 @@ const Layout = styled.div`
 `;
 
 const Content = styled.main`
-    min-height: calc(100vh - 60px - 2rem); // 전체 높이 - 헤더 - 푸터
+    min-height: calc(100vh - 60px); // 전체 높이 - 헤더
     display: flex;
     flex-direction: column;
     align-items: center;
