@@ -10,6 +10,8 @@ import 'remixicon/fonts/remixicon.css';
 import 'boxicons/css/boxicons.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import ClassDetailPage from './pages/ClassDetailPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // 메인 앱 컴포넌트
 function AppContent() {
@@ -34,6 +36,17 @@ function AppContent() {
                     </Routes>
                 </main>
                 <Footer />
+                <ToastContainer 
+                    position="top-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                />
             </div>
         </Router>
     );

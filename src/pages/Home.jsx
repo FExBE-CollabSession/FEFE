@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const DAYS = ["월", "화", "수", "목", "금"];
 const TIMES = [9, 10, 11, 12, 13, 14, 15, 16, 17];
@@ -67,6 +68,7 @@ function courseToBlocks(course) {
 }
 
 function Home() {
+    const navigate = useNavigate();
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedSemester] = useState(SEMESTERS[0]);
     const [timetables, setTimetables] = useState(initialTimetables);
@@ -187,6 +189,21 @@ function Home() {
         }
     };
 
+    // 시간표에서 수업 클릭 시 해당 커뮤니티로 이동
+    const handleSubjectClick = (courseId, courseName) => {
+        // 클릭 효과를 위한 임시 스타일 변경
+        const cell = event.target.closest('.clickable-cell');
+        if (cell) {
+            cell.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                cell.style.transform = '';
+            }, 150);
+        }
+        
+        // 커뮤니티로 이동
+        navigate(`/commupage?courseId=${courseId}&courseName=${encodeURIComponent(courseName)}`);
+    };
+
     function renderTableBody() {
         const blocks = timetables[selectedSemester];
         const cellMap = {};
@@ -220,11 +237,18 @@ function Home() {
                         style.border = "none";
                         style.position = "relative";
                         return (
-                            <TableCell key={key} style={style}>
+                            <TableCell 
+                                key={key} 
+                                style={style}
+                                onClick={() => handleSubjectClick(cell.id, cell.name)}
+                                className="clickable-cell"
+                                title={`${cell.name} 커뮤니티로 이동하기`}
+                            >
                                 {cell.isFirst && (
                                     <SubjectBlock>
                                         <div style={{fontSize: "1.08em", fontWeight: 600, lineHeight: 1.3}}>{cell.name}</div>
                                         <div style={{fontSize: "0.98em", marginTop: 2}}>{cell.room}</div>
+                                        <div style={{fontSize: "0.8em", marginTop: 4, opacity: 0.8}}>💬 클릭하여 커뮤니티로</div>
                                     </SubjectBlock>
                                 )}
                             </TableCell>
@@ -391,6 +415,14 @@ const TimeCell = styled.td`
 
 const TableCell = styled.td`
     background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &.clickable-cell:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
 `;
 
 const ModalOverlay = styled.div`
