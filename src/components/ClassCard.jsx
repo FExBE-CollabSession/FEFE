@@ -1,6 +1,8 @@
 // ./src/components/ClassCard.jsx
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
 
 const Card = styled.div`
   background-color: #f0f8ff;
@@ -8,6 +10,11 @@ const Card = styled.div`
   margin: 12px 0;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
 `;
 
 const Name = styled.h2`
@@ -31,12 +38,20 @@ const Room = styled.p`
 `
 
 export default function ClassCard({ name, professor, time, room }) {
-  return (
-    <Card>
-      <Name>{name}</Name>
-      <Professor>{professor}</Professor>
-      <Time>{time}</Time>
-      <Room>{room}</Room>
-    </Card>
-  );
-}
+    const navigate = useNavigate();
+  
+    const handleClick = () => {
+      // 수업 이름을 URL-safe하게 변환 (공백 제거)
+      const path = `/class/${encodeURIComponent(name)}`;
+      navigate(path);
+    };
+  
+    return (
+      <Card onClick={handleClick}>
+        <Title>{name}</Title>
+        <Info>👨‍🏫 교수: {professor}</Info>
+        <Info>⏰ 시간: {time}</Info>
+        <Info>🏫 강의실: {room}</Info>
+      </Card>
+    );
+  }
