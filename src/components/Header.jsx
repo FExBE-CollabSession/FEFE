@@ -57,7 +57,7 @@ function Header() {
     return (
         <> <SwalGlobalStyle/>
             <HeaderWrapper>
-                <Logo to="/">
+                <Logo to="/main">
                     <LogoText>CoSession</LogoText>
                 </Logo>
                 {menuOpen && window.innerWidth <= 768 ? (
@@ -65,14 +65,14 @@ function Header() {
                         <MobileNavHeader>
                             <CloseBtn onClick={() => setMenuOpen(false)}>×</CloseBtn>
                         </MobileNavHeader>
-                        <li><LinkStyled to="/" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
+                        <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
                         <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                         <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                         <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발 중</LinkStyled></li>
                     </NavBar>
                 ) : (
                     <NavBar>
-                        <li><LinkStyled to="/" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
+                        <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
                         <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                         <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                         <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
@@ -100,12 +100,12 @@ function Header() {
                                 <DropdownContent>
                                     <div onClick={() => {
                                         setDropdownOpen(false);
-                                        navigate("/auth/login");
+                                        navigate("/");
                                     }}>로그인
                                     </div>
                                     <div onClick={() => {
                                         setDropdownOpen(false);
-                                        navigate("/auth/signup");
+                                        navigate("/signup");
                                     }}>회원가입
                                     </div>
                                 </DropdownContent>

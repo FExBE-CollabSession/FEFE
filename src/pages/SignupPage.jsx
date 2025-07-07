@@ -74,7 +74,7 @@ export default function SignupPage() {
                     </SignupButton>
                 </Form>
 
-                <LoginLink onClick={() => navigate("/auth/login")}>
+                <LoginLink onClick={() => navigate("/login")}>
                     이미 계정이 있으신가요? 로그인하기
                 </LoginLink>
             </SignupCard>

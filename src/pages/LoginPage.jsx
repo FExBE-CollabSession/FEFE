@@ -37,7 +37,7 @@ export default function LoginPage() {
                     const json = await res.json();
                     setAuthUser(json.data);
                     await fetchUser();
-                    navigate("/");
+                    navigate("/main");
                 }
             } else {
                 setErrorMessage("아이디나 비밀번호가 일치하지 않습니다.\n입력 사항을 다시 확인해 주세요.");
@@ -87,7 +87,7 @@ export default function LoginPage() {
                     </LoginButton>
                 </Form>
 
-                <SignupLink onClick={() => navigate('/auth/signup')}>
+                <SignupLink onClick={() => navigate('/signup')}>
                     계정이 없으신가요? 회원가입하기
                 </SignupLink>
             </LoginCard>
