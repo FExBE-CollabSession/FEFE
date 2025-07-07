@@ -45,8 +45,13 @@ export default function CommuPage() {
         'Content-Type': 'application/json'
       };
       
+      console.log('🔑 토큰 값:', token);
+      
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+        console.log('🔐 Authorization 헤더 추가됨');
+      } else {
+        console.log('⚠️ 토큰이 없어서 Authorization 헤더 없이 요청');
       }
       
       const response = await fetch(`${API_BASE_URL}/courses`, {
@@ -80,35 +85,61 @@ export default function CommuPage() {
 
   // Fetch posts from API
   const fetchPosts = async () => {
+    if (!selectedCourseId) return;
+    
     setLoading(true);
+    console.log('🔍 게시글 목록 가져오기 시작 - 수업 ID:', selectedCourseId);
+    
     try {
       const token = localStorage.getItem('accessToken');
-      const url = sortType === 'latest' 
-        ? `${API_BASE_URL}/post/${selectedCourseId}/latest`
-        : sortType === 'popular'
-        ? `${API_BASE_URL}/post/${selectedCourseId}/popular`
-        : `${API_BASE_URL}/post/${selectedCourseId}`;
+      
+      // 토큰이 있으면 Authorization 헤더 포함, 없으면 제외
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      console.log('🔑 게시글 API 토큰 값:', token);
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('🔐 게시글 API Authorization 헤더 추가됨');
+      } else {
+        console.log('⚠️ 게시글 API 토큰이 없어서 Authorization 헤더 없이 요청');
+      }
+      
+      const url = `${API_BASE_URL}/post/${selectedCourseId}`;
+      console.log('📡 게시글 API URL:', url);
 
       const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: headers
       });
 
+      console.log('📊 게시글 응답 상태:', response.status);
+
       if (response.ok) {
-        const data = await response.json();
-        setPosts(data.data || []);
+        const result = await response.json();
+        console.log('✅ 게시글 API 응답 데이터:', result);
+        
+        if (result.success && result.data) {
+          console.log('📝 게시글 목록 설정:', result.data);
+          setPosts(result.data);
+        } else {
+          console.error('❌ 게시글 목록을 가져오는데 실패했습니다:', result.message);
+          // API 실패 시 기존 mock 데이터 유지
+          setPosts(getMockPosts());
+        }
       } else {
+        console.error('❌ 게시글 API 호출 실패:', response.status);
         // Fallback to mock data if API fails
         setPosts(getMockPosts());
         console.warn('API call failed, using mock data');
       }
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error('💥 게시글을 가져오는 중 오류 발생:', error);
       setPosts(getMockPosts());
     } finally {
       setLoading(false);
+      console.log('🏁 게시글 목록 가져오기 완료');
     }
   };
 
@@ -273,8 +304,12 @@ export default function CommuPage() {
   }, [searchParams, courses]);
 
   useEffect(() => {
-    if (!selectedPostId) {
+    console.log('🔄 useEffect 실행 - selectedCourseId:', selectedCourseId, 'selectedPostId:', selectedPostId);
+    if (!selectedPostId && selectedCourseId) {
+      console.log('📞 fetchPosts 호출');
       fetchPosts();
+    } else if (!selectedCourseId) {
+      console.log('⚠️ selectedCourseId가 없어서 fetchPosts 호출하지 않음');
     }
   }, [selectedCourseId, sortType, selectedPostId]);
 
@@ -315,7 +350,11 @@ export default function CommuPage() {
           ) : (
             <select 
               value={selectedCourseId} 
-              onChange={(e) => setSelectedCourseId(Number(e.target.value))}
+              onChange={(e) => {
+                const courseId = Number(e.target.value);
+                console.log('🎯 수업 선택 변경:', courseId);
+                setSelectedCourseId(courseId);
+              }}
               style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
             >
               {courses.map(course => (
@@ -361,7 +400,7 @@ export default function CommuPage() {
           <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
         ) : posts.length === 0 ? (
           <EmptyState>
-            <p>아직 게시글이 없습니다.</p>
+            <p>이 수업에는 아직 게시글이 없습니다.</p>
             <p>첫 번째 게시글을 작성해보세요!</p>
           </EmptyState>
         ) : (
@@ -370,11 +409,11 @@ export default function CommuPage() {
               <PostHeader>
                 <div>
                   <h3>{post.title}</h3>
-                  <p>작성자: {post.author} | {formatDate(post.createdAt)}</p>
+                  <p>작성자: {post.writer} | {formatDate(post.createdAt)}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <span>👁️ {post.viewCount}</span>
-                  <span>💬 {post.commentCount}</span>
+                  <span>👍 {post.likeCount}</span>
                 </div>
               </PostHeader>
               
