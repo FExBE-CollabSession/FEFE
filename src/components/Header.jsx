@@ -46,12 +46,28 @@ function Header() {
         if (result.isConfirmed) {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
+            localStorage.removeItem("userInfo");
             window.location.reload();
         }
     };
 
     // 로그인 여부는 localStorage에서 accessToken 존재 여부로 판별
     const isLoggedIn = !!localStorage.getItem('accessToken');
+    
+    // 사용자 정보 가져오기
+    const getUserInfo = () => {
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            try {
+                return JSON.parse(userInfo);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    };
+    
+    const userInfo = getUserInfo();
 
     return (
         <>
@@ -66,19 +82,7 @@ function Header() {
                 </NavBar>
                 <HeaderBtn>
                     {isLoggedIn ? (
-                        <div style={{display: "flex", alignItems: "center", gap: "1rem"}}>
-                            <div style={{
-                                fontSize: "1rem",
-                                whiteSpace: "nowrap",
-                                color: "#333",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.4rem"
-                            }}>
-                                로그인됨
-                            </div>
-                            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
-                        </div>
+                        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
                     ) : null}
                     <MenuIcon onClick={toggleMenu}/>
                 </HeaderBtn>

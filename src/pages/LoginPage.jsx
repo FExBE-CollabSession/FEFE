@@ -25,6 +25,10 @@ export default function LoginPage() {
                 if (data?.data?.accessToken) {
                     localStorage.setItem("accessToken", data.data.accessToken);
                 }
+                // 👉 사용자 정보 저장
+                if (data?.data?.user) {
+                    localStorage.setItem("userInfo", JSON.stringify(data.data.user));
+                }
                 navigate("/main");
             } else {
                 let message = "로그인 실패";
