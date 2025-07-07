@@ -399,7 +399,7 @@ export default function CommuPage() {
   const currentCourse = courses.find(course => course.id === selectedCourseId);
 
   return (
-    <Wrapper>
+    <Wrapper style={{ marginTop: '4rem' }}>
       <StyledParagraph>
         📚 커뮤니티
         {currentCourse && (
