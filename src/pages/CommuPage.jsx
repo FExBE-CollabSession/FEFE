@@ -257,12 +257,13 @@ export default function CommuPage() {
   };
 
   // Handle like/unlike
-  const handleLike = async (postId) => {
+  const handleLikeToggle = async (postId, liked) => {
     if (!selectedCourseId) {
       toast.error('수업을 선택해주세요.');
       return;
     }
-    console.log('👍 좋아요 요청 시작');
+    const action = liked ? 'unlike' : 'like';
+    console.log(`🌀 ${action === 'like' ? '좋아요' : '좋아요 취소'} 요청 시작`);
     console.log('🎯 courseId:', selectedCourseId, '📝 postId:', postId);
 
     try {
@@ -275,42 +276,41 @@ export default function CommuPage() {
         console.log('⚠️ 토큰 없이 요청');
       }
 
-      const url = `${API_BASE_URL}/post/${selectedCourseId}/${postId}/like`;
-      console.log('📡 좋아요 API URL:', url);
+      const url = `${API_BASE_URL}/post/${selectedCourseId}/${postId}/${action}`;
+      console.log('📡 API URL:', url);
 
       const response = await fetch(url, {
         method: 'PATCH',
         headers: headers,
       });
 
-      console.log('📊 좋아요 응답 상태:', response.status);
+      console.log('📊 응답 상태:', response.status);
 
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ 좋아요 성공 응답:', result);
+        console.log('✅ 성공 응답:', result);
         if (result.success && result.data) {
-          toast.success('좋아요가 반영되었습니다!');
-          // 프론트에서 바로 likeCount 반영
+          toast.success(action === 'like' ? '좋아요가 반영되었습니다!' : '좋아요가 취소되었습니다!');
           setPosts((prevPosts) =>
             prevPosts.map((post) =>
               post.id === postId
-                ? { ...post, likeCount: result.data.likeCount }
+                ? { ...post, likeCount: result.data.likeCount, liked: !liked }
                 : post
             )
           );
-          console.log('�� 프론트 likeCount 즉시 반영:', result.data.likeCount);
+          console.log('💚 프론트 likeCount/liked 즉시 반영:', result.data.likeCount, !liked);
         } else {
-          console.error('❌ 좋아요 실패:', result.message);
-          toast.error('좋아요 처리에 실패했습니다.');
+          console.error('❌ 실패:', result.message);
+          toast.error('처리에 실패했습니다.');
         }
       } else {
         const errorText = await response.text();
-        console.error('❌ 좋아요 API 호출 실패:', response.status, errorText);
-        toast.error('좋아요 처리에 실패했습니다.');
+        console.error('❌ API 호출 실패:', response.status, errorText);
+        toast.error('처리에 실패했습니다.');
       }
     } catch (error) {
-      console.error('💥 좋아요 처리 중 오류 발생:', error);
-      toast.error('좋아요 처리 중 오류가 발생했습니다.');
+      console.error('💥 처리 중 오류 발생:', error);
+      toast.error('처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -490,11 +490,11 @@ export default function CommuPage() {
               </PostContent>
               
               <PostActions onClick={(e) => e.stopPropagation()}>
-                <Button 
-                  onClick={(e) => { e.stopPropagation(); handleLike(post.id); }}
-                  style={{ backgroundColor: '#4CAF50', color: 'white' }}
+                <Button
+                  onClick={(e) => { e.stopPropagation(); handleLikeToggle(post.id, post.liked); }}
+                  style={{ backgroundColor: post.liked ? '#f44336' : '#4CAF50', color: 'white' }}
                 >
-                  👍 좋아요 ({post.likeCount})
+                  {post.liked ? '👎 좋아요 취소' : '👍 좋아요'} ({post.likeCount})
                 </Button>
                 <Button 
                   onClick={() => handleDeletePost(post.id)}
