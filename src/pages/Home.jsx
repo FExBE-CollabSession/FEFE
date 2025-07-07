@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaPlus, FaBars } from "react-icons/fa";
 
 const DAYS = ["월", "화", "수", "목", "금"];
-const TIMES = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
+const TIMES = [9, 10, 11, 12, 1, 2, 3, 4, 5];
 
 const SEMESTERS = [
     "2025년 1학기",
@@ -12,10 +12,51 @@ const SEMESTERS = [
 ];
 
 const initialTimetables = {
-    "2025년 1학기": {},
-    "2024년 2학기": {},
-    "2024년 1학기": {},
+    "2025년 1학기": [],
+    "2024년 2학기": [],
+    "2024년 1학기": [],
 };
+
+const COLORS = [
+    "#F7B731", // 노랑
+    "#4B7BEC", // 파랑
+    "#26de81", // 연두
+    "#fd9644", // 주황
+    "#eb3b5a", // 빨강
+    "#45aaf2", // 하늘
+    "#a55eea", // 보라
+    "#20bf6b", // 초록
+];
+
+const DUMMY_SUBJECTS = [
+    { name: "컴퓨터아키텍처", professor: "홍길동", time: "화 9-11", room: "복-106" },
+    { name: "자료구조및실습", professor: "이몽룡", time: "화 12-1", room: "복-621" },
+    { name: "자바프로그래밍", professor: "성춘향", time: "수 12-1", room: "복-621" },
+    { name: "웹클라이언트컴퓨팅", professor: "임꺽정", time: "월 2-3", room: "복-621" },
+    { name: "경찰체력단련1", professor: "변학도", time: "화 3-4", room: "혜-301" },
+    { name: "MZ세대창의력", professor: "최길동", time: "목 3-4", room: "혜-311" },
+];
+
+const cellKey = (day, time) => `${day}-${time}`;
+
+function parseTimeString(timeStr) {
+    const [day, range] = timeStr.split(" ");
+    if (!day || !range) return { day: null, times: [] };
+    let [start, end] = range.split("-").map(Number);
+    const startIdx = TIMES.indexOf(start);
+    const endIdx = TIMES.indexOf(end);
+    if (startIdx === -1 || endIdx === -1) return { day, times: [] };
+    const times = TIMES.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+    return { day, times };
+}
+
+function pickColor(usedColors) {
+    for (let c of COLORS) {
+        if (!usedColors.includes(c)) return c;
+    }
+    // 다 쓰면 랜덤
+    return COLORS[Math.floor(Math.random() * COLORS.length)];
+}
 
 function Home() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -23,10 +64,79 @@ function Home() {
     const [showSemesterList, setShowSemesterList] = useState(false);
     const [timetables, setTimetables] = useState(initialTimetables);
 
+    // 시간표에 수업 추가 (병합 블록)
+    const handleAddSubject = (subject) => {
+        const { day, times } = parseTimeString(subject.time);
+        if (!day || times.length === 0) return;
+        setTimetables(prev => {
+            const current = prev[selectedSemester];
+            // 중복 방지: 이미 같은 과목이 있으면 추가 X
+            if (current.some(s => s.name === subject.name && s.day === day && s.times[0] === times[0])) return prev;
+            // 색상 중복 방지
+            const usedColors = current.map(s => s.color).filter(Boolean);
+            const color = pickColor(usedColors);
+            const newSubject = { ...subject, day, times, color };
+            return { ...prev, [selectedSemester]: [...current, newSubject] };
+        });
+        setShowAddModal(false);
+    };
+
     const handleSelectSemester = (semester) => {
         setSelectedSemester(semester);
         setShowSemesterList(false);
     };
+
+    // 시간표 렌더링: 병합 블록 → 각 셀별 렌더링으로 변경
+    function renderTableBody() {
+        const blocks = timetables[selectedSemester];
+        // 각 셀에 어떤 블록이 들어가는지 매핑
+        const cellMap = {};
+        blocks.forEach((block, idx) => {
+            block.times.forEach((time, i) => {
+                cellMap[cellKey(block.day, time)] = {
+                    ...block,
+                    isFirst: i === 0,
+                    isLast: i === block.times.length - 1,
+                    idx,
+                };
+            });
+        });
+        return TIMES.map(time => (
+            <tr key={time}>
+                <TimeCell>{time}</TimeCell>
+                {DAYS.map(day => {
+                    const key = cellKey(day, time);
+                    const cell = cellMap[key];
+                    if (cell) {
+                        let style = {};
+                        if (cell.isLast) {
+                            style.background = `linear-gradient(to bottom, ${cell.color} 75%, #fff 75%)`;
+                            style.color = "#fff";
+                        } else {
+                            style.background = cell.color;
+                            style.color = "#fff";
+                        }
+                        style.fontWeight = 500;
+                        style.verticalAlign = "top";
+                        style.border = "none";
+                        style.position = "relative";
+                        return (
+                            <TableCell key={key} style={style}>
+                                {cell.isFirst && (
+                                    <SubjectBlock>
+                                        <div style={{fontSize: "1.08em", fontWeight: 600, lineHeight: 1.3}}>{cell.name}</div>
+                                        <div style={{fontSize: "0.98em", marginTop: 2}}>{cell.room}</div>
+                                    </SubjectBlock>
+                                )}
+                            </TableCell>
+                        );
+                    } else {
+                        return <TableCell key={key}></TableCell>;
+                    }
+                })}
+            </tr>
+        ));
+    }
 
     return (
         <TimetableFullWrapper>
@@ -67,14 +177,7 @@ function Home() {
                             </tr>
                         </thead>
                         <tbody>
-                            {TIMES.map(time => (
-                                <tr key={time}>
-                                    <TimeCell>{time}</TimeCell>
-                                    {DAYS.map(day => (
-                                        <TableCell key={day + time}></TableCell>
-                                    ))}
-                                </tr>
-                            ))}
+                            {renderTableBody()}
                         </tbody>
                     </StyledTable>
                 </TableBox>
@@ -82,8 +185,15 @@ function Home() {
             {showAddModal && (
                 <ModalOverlay onClick={() => setShowAddModal(false)}>
                     <ModalContent onClick={e => e.stopPropagation()}>
-                        <h3>수업 추가 (UI만)</h3>
-                        <p>이곳에 수업 추가 폼이 들어갑니다.</p>
+                        <h3>수업 추가</h3>
+                        <SubjectList>
+                            {DUMMY_SUBJECTS.map((subject, idx) => (
+                                <SubjectItem key={idx} onClick={() => handleAddSubject(subject)}>
+                                    <strong>{subject.name}</strong> <span>({subject.professor})</span>
+                                    <SubjectTime>{subject.time} / {subject.room}</SubjectTime>
+                                </SubjectItem>
+                            ))}
+                        </SubjectList>
                         <button onClick={() => setShowAddModal(false)}>닫기</button>
                     </ModalContent>
                 </ModalOverlay>
@@ -196,6 +306,12 @@ const StyledTable = styled.table`
         background: #fafafa;
         font-weight: 600;
         font-size: 1.1rem;
+        width: 100px;
+        max-width: 100px;
+    }
+    td {
+        width: 100px;
+        max-width: 100px;
     }
 `;
 
@@ -226,4 +342,49 @@ const ModalContent = styled.div`
     min-width: 280px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.08);
     text-align: center;
+`;
+
+const SubjectList = styled.ul`
+    margin: 24px 0 16px 0;
+    padding: 0;
+    list-style: none;
+`;
+const SubjectItem = styled.li`
+    padding: 12px 0 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.08rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    strong { color: #333; }
+    span { color: #888; font-size: 0.98em; margin-left: 4px; }
+    cursor: pointer;
+    &:hover { background: #f5eaea; }
+`;
+const SubjectTime = styled.div`
+    color: #b71c1c;
+    font-size: 0.98em;
+    margin-top: 2px;
+`;
+
+const SubjectBlock = styled.div`
+    padding: 8px 0 8px 0;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: 0.98rem;
+    line-height: 1.25;
+    word-break: break-all;
+    white-space: normal;
+    text-align: left;
+    width: 100%;
+    strong, div {
+        font-size: 0.98em;
+        font-weight: 500;
+        text-align: left;
+        word-break: break-all;
+        white-space: normal;
+    }
 `;
