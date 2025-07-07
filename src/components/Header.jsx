@@ -81,7 +81,7 @@ function Header() {
                     <li><Link to="/commupage">커뮤니티</Link></li>
                 </NavBar>
                 <HeaderBtn>
-                    <Link to="/mypage">마이페이지</Link>
+                    <HeaderMyPageButton to="/mypage">마이페이지</HeaderMyPageButton>
                     <MenuIcon onClick={toggleMenu}/>
                 </HeaderBtn>
             </HeaderWrapper>
@@ -388,6 +388,27 @@ const LogoText = styled.div`
     
     @media (max-width: 480px) {
         font-size: 1.5rem;
+    }
+`;
+
+const HeaderMyPageButton = styled(Link)`
+    background: linear-gradient(90deg, #4B7BEC 60%, #45aaf2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    padding: 8px 22px;
+    margin-right: 8px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(75, 123, 236, 0.08);
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+    &:hover {
+        background: linear-gradient(90deg, #3a5fc8 60%, #1e90ff 100%);
+        transform: translateY(-2px) scale(1.04);
+        color: #fff;
+        text-decoration: none;
     }
 `;
 

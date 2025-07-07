@@ -312,7 +312,7 @@ function Home() {
                                 )}
                             </SubjectList>
                         )}
-                        <button onClick={() => setShowAddModal(false)}>닫기</button>
+                        <CloseButton onClick={() => setShowAddModal(false)}>닫기</CloseButton>
                     </ModalContent>
                 </ModalOverlay>
             )}
@@ -496,4 +496,22 @@ const LoadingText = styled.div`
     padding: 20px;
     color: #666;
     font-size: 1rem;
+`;
+
+const CloseButton = styled.button`
+    margin-top: 12px;
+    padding: 8px 28px;
+    background: linear-gradient(90deg, #4B7BEC 60%, #45aaf2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(75, 123, 236, 0.08);
+    transition: background 0.2s, transform 0.15s;
+    &:hover {
+        background: linear-gradient(90deg, #3a5fc8 60%, #1e90ff 100%);
+        transform: translateY(-2px) scale(1.04);
+    }
 `;
