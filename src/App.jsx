@@ -10,6 +10,7 @@ import 'remixicon/fonts/remixicon.css';
 import 'boxicons/css/boxicons.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import ClassDetailPage from './pages/ClassDetailPage';
+import MyPage from './pages/MyPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -33,6 +34,7 @@ function AppContent() {
                         <Route path="/main" element={<Home />} />
                         <Route path="/commupage" element={<CommuPage />} />
                         <Route path="/class/:name" element={<ClassDetailPage />} />
+                        <Route path="/mypage" element={<MyPage />} />
                     </Routes>
                 </main>
                 <Footer />

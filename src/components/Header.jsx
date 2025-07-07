@@ -79,6 +79,7 @@ function Header() {
                 <NavBar $isOpen={menuOpen}>
                     <li><Link to="/main">시간표</Link></li>
                     <li><Link to="/commupage">커뮤니티</Link></li>
+                    <li><Link to="/mypage">마이페이지</Link></li>
                 </NavBar>
                 <HeaderBtn>
                     {isLoggedIn ? (
