@@ -9,7 +9,7 @@ function CommuPage() {
         <StyledParagraph>
           유림
         </StyledParagraph>
-      </>
+      </> 
     )
   }
 
