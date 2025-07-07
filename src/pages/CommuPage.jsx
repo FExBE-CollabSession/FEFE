@@ -17,7 +17,7 @@ export default function CommuPage() {
   const [selectedCourseId, setSelectedCourseId] = useState(1); // Default course ID
   const [selectedPostId, setSelectedPostId] = useState(null); // For viewing individual posts
 
-  // Mock course data - replace with actual API call
+  // 수업 목록 상태
   const [courses, setCourses] = useState([
     { id: 1, name: "컴퓨터아키텍처", professor: "홍길동" },
     { id: 2, name: "자료구조및실습", professor: "이몽룡" },
@@ -26,9 +26,57 @@ export default function CommuPage() {
     { id: 5, name: "경찰체력단련1", professor: "변학도" },
     { id: 6, name: "MZ세대창의력", professor: "최길동" }
   ]);
+  const [coursesLoading, setCoursesLoading] = useState(false);
 
-  // API base URL - replace with your actual backend URL
+  // API base URL - 로컬 서버
   const API_BASE_URL = 'http://localhost:8080/api';
+
+  // 수업 목록을 가져오는 함수
+  const fetchCourses = async () => {
+    setCoursesLoading(true);
+    console.log('🔍 수업 목록 가져오기 시작');
+    
+    try {
+      const token = localStorage.getItem('accessToken');
+      console.log('🔑 토큰 존재 여부:', !!token);
+      
+      // 토큰이 있으면 Authorization 헤더 포함, 없으면 제외
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/courses`, {
+        headers: headers
+      });
+
+      console.log('📊 응답 상태:', response.status);
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ API 응답 데이터:', result);
+        
+        if (result.success && result.data) {
+          console.log('📚 수업 목록 설정:', result.data);
+          setCourses(result.data);
+        } else {
+          console.error('❌ 수업 목록을 가져오는데 실패했습니다:', result.message);
+        }
+      } else {
+        console.error('❌ 수업 목록 API 호출 실패:', response.status);
+        // API 실패 시 기존 mock 데이터 유지
+      }
+    } catch (error) {
+      console.error('💥 수업 목록을 가져오는 중 오류 발생:', error);
+      // 에러 시 기존 mock 데이터 유지
+    } finally {
+      setCoursesLoading(false);
+      console.log('🏁 수업 목록 가져오기 완료');
+    }
+  };
 
   // Fetch posts from API
   const fetchPosts = async () => {
@@ -195,6 +243,11 @@ export default function CommuPage() {
     });
   };
 
+  // 컴포넌트 마운트 시 수업 목록 가져오기
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
   // URL 파라미터에서 courseId와 courseName 가져오기
   useEffect(() => {
     const courseIdFromUrl = searchParams.get('courseId');
@@ -257,17 +310,21 @@ export default function CommuPage() {
       <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div>
           <label style={{ marginRight: '10px', fontWeight: 'bold' }}>수업 선택:</label>
-          <select 
-            value={selectedCourseId} 
-            onChange={(e) => setSelectedCourseId(Number(e.target.value))}
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
-          >
-            {courses.map(course => (
-              <option key={course.id} value={course.id}>
-                {course.name} - {course.professor}
-              </option>
-            ))}
-          </select>
+          {coursesLoading ? (
+            <span style={{ padding: '8px', color: '#666' }}>수업 목록 로딩 중...</span>
+          ) : (
+            <select 
+              value={selectedCourseId} 
+              onChange={(e) => setSelectedCourseId(Number(e.target.value))}
+              style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+            >
+              {courses.map(course => (
+                <option key={course.id} value={course.id}>
+                  {course.name} - {course.professor}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <Button 
           onClick={() => navigate('/main')}
