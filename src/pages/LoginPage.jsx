@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../contexts/AuthContext';
 
 export default function LoginPage() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
@@ -14,36 +14,32 @@ export default function LoginPage() {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const formData = new URLSearchParams();
-            formData.append('username', username);
-            formData.append('password', password);
-
-            const res = await fetch('http://localhost:8000/user-service/users/login', {
+            const res = await fetch('/api/auths/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include',
             });
 
             if (res.ok) {
-                const accessToken = res.headers.get('accessToken');
-                const refreshToken = res.headers.get('refreshToken');
-
-                if (accessToken) {
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-
-                    const json = await res.json();
-                    setAuthUser(json.data);
-                    await fetchUser();
-                    navigate("/main");
-                }
+                const data = await res.json();
+                setAuthUser?.(data.data);
+                await fetchUser?.();
+                navigate("/main");
             } else {
-                setErrorMessage("아이디나 비밀번호가 일치하지 않습니다.\n입력 사항을 다시 확인해 주세요.");
+                let message = "로그인 실패";
+                try {
+                    const data = await res.json();
+                    message = data.message || message;
+                } catch {
+                    const text = await res.text();
+                    if (text) message = text;
+                }
+                setErrorMessage(message);
             }
         } catch (err) {
             console.error(err);
+            setErrorMessage("로그인 중 오류가 발생했습니다.");
         }
     };
 
@@ -57,12 +53,12 @@ export default function LoginPage() {
 
                 <Form onSubmit={handleLogin}>
                     <InputGroup>
-                        <Label>아이디</Label>
+                        <Label>이메일</Label>
                         <Input
-                            type="text"
-                            placeholder="아이디를 입력"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            type="email"
+                            placeholder="이메일을 입력"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                             autoComplete="username"
                         />

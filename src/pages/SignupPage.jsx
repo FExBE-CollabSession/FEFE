@@ -4,25 +4,29 @@ import {useNavigate} from "react-router-dom";
 import {showSignupSuccessAlert} from "../utils/alert";
 
 export default function SignupPage() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [nickname, setNickname] = useState("");
+    const [name, setName] = useState("");
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:8000/user-service/users/general", {
+            const res = await fetch("/api/users/sign-up", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({username, password, nickname}),
+                body: JSON.stringify({ email, password, username: name }),
             });
-
             if (res.ok) {
                 await showSignupSuccessAlert(navigate);
+                navigate('/');
+            } else {
+                const data = await res.json();
+                alert(data.message || "회원가입 실패");
             }
         } catch (err) {
+            alert("회원가입 중 오류가 발생했습니다.");
             console.error(err);
         }
     };
@@ -37,23 +41,23 @@ export default function SignupPage() {
 
                 <Form onSubmit={handleRegister}>
                     <InputGroup>
-                        <Label>아이디</Label>
+                        <Label>이메일</Label>
                         <Input
-                            type="text"
-                            placeholder="영문, 숫자 조합으로 입력"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            type="email"
+                            placeholder="이메일을 입력하세요"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </InputGroup>
 
                     <InputGroup>
-                        <Label>닉네임</Label>
+                        <Label>이름</Label>
                         <Input
                             type="text"
-                            placeholder="사용할 닉네임을 입력"
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
+                            placeholder="이름을 입력하세요"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             required
                         />
                     </InputGroup>

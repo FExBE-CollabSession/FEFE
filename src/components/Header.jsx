@@ -119,7 +119,7 @@ function Header() {
                                 alignItems: "center",
                                 gap: "0.4rem"
                             }}>
-                                {authUser.nickname}님{" "}
+                                {authUser.username || authUser.name || authUser.email}님{" "}
                             </div>
                             <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
                         </div>
