@@ -205,6 +205,7 @@ function Home() {
 export default Home;
 
 const TimetableFullWrapper = styled.div`
+    margin-top: 2rem;
     min-height: 100vh;
     width: 100vw;
     display: flex;
