@@ -34,3 +34,31 @@ chore :
 fix :
 build :
 ..
+
+# 📚 Course API Integration
+
+## Overview
+The application now integrates with the backend course API to fetch user's registered courses from the database instead of using dummy data.
+
+## Features
+- **Dynamic Course Loading**: Fetches courses from `/api/courses/my` endpoint
+- **Authentication**: Uses Bearer token authentication
+- **Error Handling**: Graceful error handling with retry functionality
+- **Fallback Support**: Option to use sample data if API fails
+- **Loading States**: Shows loading indicator while fetching data
+
+## API Integration
+- **Endpoint**: `GET /api/courses/my`
+- **Authentication**: Bearer token required
+- **Response Format**: Expected to return `{ success: boolean, data: CourseResponse[] }`
+
+## Usage
+1. Click the "수업추가" (Add Course) button in the timetable
+2. The system will automatically fetch courses from the database
+3. If no courses are found, you can use sample data
+4. If there's an error, you can retry or use sample data
+
+## File Structure
+- `src/pages/Home.jsx` - Main timetable component with course integration
+- `src/utils/api.js` - API utility functions for course management
+- `src/contexts/AuthContext.jsx` - Authentication context for token management

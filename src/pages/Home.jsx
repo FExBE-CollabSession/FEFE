@@ -1,20 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { FaPlus, FaBars } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 
 const DAYS = ["월", "화", "수", "목", "금"];
 const TIMES = [9, 10, 11, 12, 1, 2, 3, 4, 5];
 
 const SEMESTERS = [
-    "2025년 1학기",
-    "2024년 2학기",
-    "2024년 1학기"
+    "2025년 1학기"
 ];
 
 const initialTimetables = {
     "2025년 1학기": [],
-    "2024년 2학기": [],
-    "2024년 1학기": [],
 };
 
 const COLORS = [
@@ -26,15 +22,6 @@ const COLORS = [
     "#45aaf2", // 하늘
     "#a55eea", // 보라
     "#20bf6b", // 초록
-];
-
-const DUMMY_SUBJECTS = [
-    { name: "컴퓨터아키텍처", professor: "홍길동", time: "화 9-11", room: "복-106" },
-    { name: "자료구조및실습", professor: "이몽룡", time: "화 12-1", room: "복-621" },
-    { name: "자바프로그래밍", professor: "성춘향", time: "수 12-1", room: "복-621" },
-    { name: "웹클라이언트컴퓨팅", professor: "임꺽정", time: "월 2-3", room: "복-621" },
-    { name: "경찰체력단련1", professor: "변학도", time: "화 3-4", room: "혜-301" },
-    { name: "MZ세대창의력", professor: "최길동", time: "목 3-4", room: "혜-311" },
 ];
 
 const cellKey = (day, time) => `${day}-${time}`;
@@ -60,9 +47,52 @@ function pickColor(usedColors) {
 
 function Home() {
     const [showAddModal, setShowAddModal] = useState(false);
-    const [selectedSemester, setSelectedSemester] = useState(SEMESTERS[0]);
-    const [showSemesterList, setShowSemesterList] = useState(false);
+    const [selectedSemester] = useState(SEMESTERS[0]);
     const [timetables, setTimetables] = useState(initialTimetables);
+    const [availableSubjects, setAvailableSubjects] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // API에서 사용자의 수업 목록을 가져오는 함수
+    const fetchMyCourses = async () => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+        setLoading(true);
+        try {
+            const response = await fetch("/api/courses/my", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // API 응답 구조에 맞게 데이터 변환
+                const courses = data.data.map(course => ({
+                    name: course.name || course.courseName,
+                    professor: course.professor || course.instructor,
+                    time: course.time || course.schedule,
+                    room: course.room || course.classroom,
+                }));
+                setAvailableSubjects(courses);
+            } else {
+                setAvailableSubjects([]);
+            }
+        } catch (error) {
+            setAvailableSubjects([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchMyCourses();
+    }, []);
+
+    const handleOpenAddModal = () => {
+        fetchMyCourses();
+        setShowAddModal(true);
+    };
 
     // 시간표에 수업 추가 (병합 블록)
     const handleAddSubject = (subject) => {
@@ -81,15 +111,8 @@ function Home() {
         setShowAddModal(false);
     };
 
-    const handleSelectSemester = (semester) => {
-        setSelectedSemester(semester);
-        setShowSemesterList(false);
-    };
-
-    // 시간표 렌더링: 병합 블록 → 각 셀별 렌더링으로 변경
     function renderTableBody() {
         const blocks = timetables[selectedSemester];
-        // 각 셀에 어떤 블록이 들어가는지 매핑
         const cellMap = {};
         blocks.forEach((block, idx) => {
             block.times.forEach((time, i) => {
@@ -145,25 +168,9 @@ function Home() {
                     <Semester>{selectedSemester}</Semester>
                     <Title>시간표</Title>
                     <HeaderIcons>
-                        <IconButton onClick={() => setShowAddModal(true)} title="수업 추가">
+                        <IconButton onClick={handleOpenAddModal} title="수업 추가">
                             <FaPlus size={24} />
                         </IconButton>
-                        <IconButton title="메뉴" onClick={() => setShowSemesterList(v => !v)}>
-                            <FaBars size={24} />
-                        </IconButton>
-                        {showSemesterList && (
-                            <SemesterDropdown>
-                                {SEMESTERS.map(sem => (
-                                    <SemesterItem
-                                        key={sem}
-                                        onClick={() => handleSelectSemester(sem)}
-                                        $selected={sem === selectedSemester}
-                                    >
-                                        {sem}
-                                    </SemesterItem>
-                                ))}
-                            </SemesterDropdown>
-                        )}
                     </HeaderIcons>
                 </TimetableHeader>
                 <TableBox>
@@ -186,14 +193,18 @@ function Home() {
                 <ModalOverlay onClick={() => setShowAddModal(false)}>
                     <ModalContent onClick={e => e.stopPropagation()}>
                         <h3>수업 추가</h3>
-                        <SubjectList>
-                            {DUMMY_SUBJECTS.map((subject, idx) => (
-                                <SubjectItem key={idx} onClick={() => handleAddSubject(subject)}>
-                                    <strong>{subject.name}</strong> <span>({subject.professor})</span>
-                                    <SubjectTime>{subject.time} / {subject.room}</SubjectTime>
-                                </SubjectItem>
-                            ))}
-                        </SubjectList>
+                        {loading ? (
+                            <LoadingText>수업 목록을 불러오는 중...</LoadingText>
+                        ) : (
+                            <SubjectList>
+                                {availableSubjects.map((subject, idx) => (
+                                    <SubjectItem key={idx} onClick={() => handleAddSubject(subject)}>
+                                        <strong>{subject.name}</strong> <span>({subject.professor})</span>
+                                        <SubjectTime>{subject.time} / {subject.room}</SubjectTime>
+                                    </SubjectItem>
+                                ))}
+                            </SubjectList>
+                        )}
                         <button onClick={() => setShowAddModal(false)}>닫기</button>
                     </ModalContent>
                 </ModalOverlay>
@@ -257,33 +268,6 @@ const IconButton = styled.button`
     display: flex;
     align-items: center;
     &:hover { opacity: 0.7; }
-`;
-
-const SemesterDropdown = styled.ul`
-    position: absolute;
-    top: 120%;
-    right: 0;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    min-width: 140px;
-    z-index: 10;
-    padding: 4px 0;
-`;
-
-const SemesterItem = styled.li`
-    padding: 10px 18px;
-    font-size: 1.05rem;
-    color: ${({$selected}) => $selected ? '#fff' : '#b71c1c'};
-    background: ${({$selected}) => $selected ? '#b71c1c' : 'transparent'};
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background 0.15s;
-    &:hover {
-        background: #f5eaea;
-        color: #b71c1c;
-    }
 `;
 
 const TableBox = styled.div`
@@ -388,4 +372,11 @@ const SubjectBlock = styled.div`
         word-break: break-all;
         white-space: normal;
     }
+`;
+
+const LoadingText = styled.div`
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 1rem;
 `;

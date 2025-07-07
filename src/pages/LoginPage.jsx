@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
 import styled, {keyframes} from 'styled-components';
 import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../contexts/AuthContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const {setAuthUser, fetchUser} = useAuth();
     
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -20,11 +18,13 @@ export default function LoginPage() {
                 body: JSON.stringify({ email, password }),
                 credentials: 'include',
             });
-
+    
             if (res.ok) {
                 const data = await res.json();
-                setAuthUser?.(data.data);
-                await fetchUser?.();
+                // 👉 accessToken 저장
+                if (data?.data?.accessToken) {
+                    localStorage.setItem("accessToken", data.data.accessToken);
+                }
                 navigate("/main");
             } else {
                 let message = "로그인 실패";
@@ -42,6 +42,7 @@ export default function LoginPage() {
             setErrorMessage("로그인 중 오류가 발생했습니다.");
         }
     };
+    
 
     return (
         <PageContainer>

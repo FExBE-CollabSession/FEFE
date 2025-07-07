@@ -1,16 +1,12 @@
 import styled from "styled-components";
 import {useNavigate, Link} from "react-router-dom";
-import {useAuth} from "../contexts/AuthContext.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import SwalGlobalStyle from "../styles/SwalGlobalStyle.jsx";
-// 로고는 텍스트로 대체
-const logo = null;
 import {useEffect, useRef, useState} from "react";
 
 function Header() {
-    const {authUser, logout} = useAuth();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -33,7 +29,6 @@ function Header() {
         };
     }, [dropdownOpen]);
 
-
     const handleLogout = async () => {
         const result = await Swal.fire({
             title: "로그아웃 하시겠습니까?",
@@ -49,67 +44,28 @@ function Header() {
         });
 
         if (result.isConfirmed) {
-            logout();
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
             window.location.reload();
         }
     };
 
+    // 로그인 여부는 localStorage에서 accessToken 존재 여부로 판별
+    const isLoggedIn = !!localStorage.getItem('accessToken');
+
     return (
-        <> <SwalGlobalStyle/>
+        <>
+            <SwalGlobalStyle />
             <HeaderWrapper>
                 <Logo to="/main">
-                    <LogoText>CoSession</LogoText>
+                    <span style={{fontWeight: 700, fontSize: "1.5rem", color: "#4B7BEC"}}>CoSession</span>
                 </Logo>
-                {menuOpen && window.innerWidth <= 768 ? (
-                    <NavBar $isOpen={menuOpen}>
-                        <MobileNavHeader>
-                            <CloseBtn onClick={() => setMenuOpen(false)}>×</CloseBtn>
-                        </MobileNavHeader>
-                        <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/commupage" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                    </NavBar>
-                ) : (
-                    <NavBar>
-                        <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/commupage" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                    </NavBar>
-                )}
-
+                <NavBar $isOpen={menuOpen}>
+                    <li><Link to="/main">시간표</Link></li>
+                    <li><Link to="/commupage">커뮤니티</Link></li>
+                </NavBar>
                 <HeaderBtn>
-                    {!authUser ? (
-                        <DropdownWrapper
-                            ref={dropdownRef}
-                            onMouseEnter={() => {
-                                if (window.innerWidth > 768) setDropdownOpen(true);
-                            }}
-                            onMouseLeave={() => {
-                                if (window.innerWidth > 768) setDropdownOpen(false);
-                            }}
-                        >
-                            <UserIcon
-                                icon={faUser}
-                                onClick={() => {
-                                    if (window.innerWidth <= 768) setDropdownOpen(prev => !prev);
-                                }}
-                            />
-                            {dropdownOpen && (
-                                <DropdownContent>
-                                    <div onClick={() => {
-                                        setDropdownOpen(false);
-                                        navigate("/");
-                                    }}>로그인
-                                    </div>
-                                    <div onClick={() => {
-                                        setDropdownOpen(false);
-                                        navigate("/signup");
-                                    }}>회원가입
-                                    </div>
-                                </DropdownContent>
-                            )}
-                        </DropdownWrapper>
-
-
-                    ) : (
+                    {isLoggedIn ? (
                         <div style={{display: "flex", alignItems: "center", gap: "1rem"}}>
                             <div style={{
                                 fontSize: "1rem",
@@ -119,12 +75,11 @@ function Header() {
                                 alignItems: "center",
                                 gap: "0.4rem"
                             }}>
-                                {authUser.username || authUser.name || authUser.email}님{" "}
+                                로그인됨
                             </div>
                             <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
                         </div>
-                    )}
-
+                    ) : null}
                     <MenuIcon onClick={toggleMenu}/>
                 </HeaderBtn>
             </HeaderWrapper>
