@@ -184,27 +184,74 @@ export default function CommuPage() {
       return;
     }
 
+    if (!selectedCourseId) {
+      toast.error('수업을 선택해주세요.');
+      return;
+    }
+
+    console.log('✏️ 게시글 작성 시작');
+    console.log('📝 작성할 게시글 내용:', newPost);
+    console.log('🎯 선택된 수업 ID:', selectedCourseId);
+
     try {
       const token = localStorage.getItem('accessToken');
+      console.log('🔑 게시글 작성 토큰 값:', token);
+      
+      // 토큰이 있으면 Authorization 헤더 포함, 없으면 제외
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('🔐 게시글 작성 Authorization 헤더 추가됨');
+      } else {
+        console.log('⚠️ 게시글 작성 토큰이 없어서 Authorization 헤더 없이 요청');
+      }
+
+      const requestBody = {
+        title: newPost.title,
+        content: newPost.content
+      };
+      
+      console.log('📤 요청 URL:', `${API_BASE_URL}/post/${selectedCourseId}`);
+      console.log('📤 요청 Body:', requestBody);
+
       const response = await fetch(`${API_BASE_URL}/post/${selectedCourseId}`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newPost)
+        headers: headers,
+        body: JSON.stringify(requestBody)
       });
 
+      console.log('📊 게시글 작성 응답 상태:', response.status);
+
       if (response.ok) {
-        toast.success('게시글이 성공적으로 작성되었습니다!');
-        setIsCreateModalOpen(false);
-        setNewPost({ title: '', content: '' });
-        fetchPosts(); // Refresh posts
+        const result = await response.json();
+        console.log('✅ 게시글 작성 성공 응답:', result);
+        
+        if (result.success) {
+          console.log('📝 생성된 게시글:', result.data);
+          toast.success('게시글이 성공적으로 작성되었습니다!');
+          setIsCreateModalOpen(false);
+          setNewPost({ title: '', content: '' });
+          fetchPosts(); // Refresh posts
+        } else {
+          console.error('❌ 게시글 작성 실패:', result.message);
+          toast.error(`게시글 작성에 실패했습니다: ${result.message}`);
+        }
       } else {
+        console.error('❌ 게시글 작성 API 호출 실패:', response.status);
+        const errorText = await response.text();
+        console.error('📄 에러 응답 내용:', errorText);
         toast.error('게시글 작성에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error('💥 게시글 작성 중 오류 발생:', error);
+      console.error('🔍 에러 상세 정보:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
       toast.error('게시글 작성 중 오류가 발생했습니다.');
     }
   };
@@ -262,17 +309,7 @@ export default function CommuPage() {
     }
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+
 
   // 컴포넌트 마운트 시 수업 목록 가져오기
   useEffect(() => {
@@ -409,7 +446,7 @@ export default function CommuPage() {
               <PostHeader>
                 <div>
                   <h3>{post.title}</h3>
-                  <p>작성자: {post.writer} | {formatDate(post.createdAt)}</p>
+                  <p>작성자: {post.writer}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <span>👁️ {post.viewCount}</span>
