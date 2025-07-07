@@ -66,16 +66,12 @@ function Header() {
                             <CloseBtn onClick={() => setMenuOpen(false)}>×</CloseBtn>
                         </MobileNavHeader>
                         <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발 중</LinkStyled></li>
+                        <li><LinkStyled to="/commupage" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                     </NavBar>
                 ) : (
                     <NavBar>
                         <li><LinkStyled to="/main" onClick={() => setMenuOpen(false)}>홈</LinkStyled></li>
-                        <li><LinkStyled to="/articles/page/1" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                        <li><LinkStyled to="/calendar" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
-                        <li><LinkStyled to="/about" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
+                        <li><LinkStyled to="/commupage" onClick={() => setMenuOpen(false)}>개발중</LinkStyled></li>
                     </NavBar>
                 )}
 

@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import Footer from './components/Footer.jsx';
+import CommuPage from './pages/CommuPage.jsx';
 import 'remixicon/fonts/remixicon.css';
 import 'boxicons/css/boxicons.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -39,6 +40,9 @@ function AppContent() {
                         } />
                         <Route path="/main" element={
                             <Home />
+                        } />
+                        <Route path="/commupage" element={
+                            <CommuPage/>
                         } />
                     </Routes>
                 </main>

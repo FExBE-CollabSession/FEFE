@@ -1,8 +1,13 @@
-// CommuPage.styles.js 예시
+// ./src/pages/CommuPage.styles.js
 import styled from "styled-components";
 
-export const StyledParagraph = styled.p`
-  color: #333;
-  font-size: 2rem;
+export const Wrapper = styled.div`
+  padding: 40px;
+  background-color: #fffefc;
 `;
- //dddsssdddddd
+
+export const StyledParagraph = styled.p`
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
