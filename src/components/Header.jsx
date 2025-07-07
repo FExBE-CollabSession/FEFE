@@ -79,12 +79,9 @@ function Header() {
                 <NavBar $isOpen={menuOpen}>
                     <li><Link to="/main">시간표</Link></li>
                     <li><Link to="/commupage">커뮤니티</Link></li>
-                    <li><Link to="/mypage">마이페이지</Link></li>
                 </NavBar>
                 <HeaderBtn>
-                    {isLoggedIn ? (
-                        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
-                    ) : null}
+                    <Link to="/mypage">마이페이지</Link>
                     <MenuIcon onClick={toggleMenu}/>
                 </HeaderBtn>
             </HeaderWrapper>
