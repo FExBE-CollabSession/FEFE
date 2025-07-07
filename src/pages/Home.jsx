@@ -48,6 +48,23 @@ function pickColor(usedColors) {
     return COLORS[Math.floor(Math.random() * COLORS.length)];
 }
 
+function courseToBlocks(course) {
+    // lectureDay: "월,금" → ["월", "금"]
+    const days = (course.lectureDay || "").split(",").map(d => d.trim());
+    const start = Number(course.startTime);
+    const end = Number(course.endTime);
+    // TIMES 배열에서 인덱스 추출
+    const startIdx = TIMES.indexOf(start);
+    const endIdx = TIMES.indexOf(end);
+    if (startIdx === -1 || endIdx === -1) return [];
+    const times = TIMES.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+    return days.map(day => ({
+        ...course,
+        day,
+        times,
+    }));
+}
+
 function Home() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedSemester] = useState(SEMESTERS[0]);
@@ -95,7 +112,6 @@ function Home() {
     const fetchMyCourses = async () => {
         const token = localStorage.getItem("accessToken");
         if (!token) return;
-        
         try {
             const response = await fetch("/api/courses/my", {
                 headers: {
@@ -103,29 +119,21 @@ function Home() {
                     "Content-Type": "application/json",
                 },
             });
-
             if (response.ok) {
                 const data = await response.json();
-                console.log("내 수업 목록 API 응답:", data); // 디버깅용 로그
-                const myCourses = data.data.map(course => ({
-                    id: course.id,
-                    name: course.name || course.courseName,
-                    professor: course.professor || course.instructor,
-                    time: course.time || course.schedule,
-                    room: course.room || course.classroom,
-                }));
-                
-                // 사용자의 수업을 시간표에 추가
+                const myCourses = data.data;
+                // 시간표 블록 변환
                 const newTimetables = { ...initialTimetables };
                 myCourses.forEach(course => {
-                    const { day, times } = parseTimeString(course.time);
-                    if (day && times.length > 0) {
+                    const blocks = courseToBlocks(course);
+                    blocks.forEach(block => {
                         const usedColors = newTimetables[selectedSemester].map(s => s.color).filter(Boolean);
                         const color = pickColor(usedColors);
-                        newTimetables[selectedSemester].push({ ...course, day, times, color });
-                    }
+                        newTimetables[selectedSemester].push({ ...block, color });
+                    });
                 });
                 setTimetables(newTimetables);
+                setMyCourseIds(new Set(myCourses.map(c => c.id)));
             }
         } catch (error) {
             console.error("내 수업 목록 조회 중 오류:", error);
