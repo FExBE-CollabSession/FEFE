@@ -1,64 +1,72 @@
-# 🎯 Branch Convention & Git Convention
-## 🎯 Git Convention
-- 🎉 Start: Start New Project [:tada]
-- ✨ Feat: 새로운 기능을 추가 [:sparkles]
-- 🐛 Fix: 버그 수정 [:bug]
-- 🎨 Design: CSS 등 사용자 UI 디자인 변경 [:art]
-- ♻️ Refactor: 코드 리팩토링 [:recycle]
-- 🔧 Settings: Changing configuration files [:wrench]
-- 🗃️ Comment: 필요한 주석 추가 및 변경 [:card_file_box]
-- ➕ Dependency/Plugin: Add a dependency/plugin [:heavy_plus_sign]
-- 📝 Docs: 문서 수정 [:memo]
-- 🔀 Merge: Merge branches [:twisted_rightwards_arrows:]
-- 🚀 Deploy: Deploying stuff [:rocket]
-- 🚚 Rename: 파일 혹은 폴더명을 수정하거나 옮기는 작업만인 경우 [:truck]
-- 🔥 Remove: 파일을 삭제하는 작업만 수행한 경우 [:fire]
-- ⏪️ Revert: 전 버전으로 롤백 [:rewind]
+## 🦁 LIKELION 연합세션 세미해커톤
+✴ 2025 Collaboration Session Semi-Hackathon ✴
+<br><br>
+
+## 📝 개요
+약 6시간 동안 진행된 세미해커톤 대회 프로젝트입니다. <br/>
+이 프로젝트는 Spring Boot 백엔드 API와 연동되는 React 기반 커뮤니티 시스템입니다. <br/> 
+사용자들이 수업별로 게시글을 작성하고, 좋아요, 댓글 등의 상호작용을 할 수 있습니다.
+
+<br>
+
+## 🧑‍🤝‍🧑 팀 구성원
+| <img src="https://github.com/user-attachments/assets/e7050ae6-196e-4f9c-84d6-56dd29f9ea65" width="140" /> | <img src="https://github.com/user-attachments/assets/1a67e693-c507-4790-b278-f22efc599d33" width="140" /> |
+| :-----------------: | :-----------------: |
+| **김도현**       | **오유림**      | 
+| 프론트엔드   | 프론트엔드    |
+| 서경대학교     | 서경대학교    |
+| [@kdhdd](https://github.com/kdhdd) | [@ulim006](https://github.com/ulim006) |
+
+---
+
+<br>
+
+## 🔗 Backend Repository
+
+백엔드 레포지토리
+
+[![Backend Repository](https://img.shields.io/badge/Backend-Repository-orange?style=for-the-badge&logo=github)](https://github.com/FExBE-CollabSession/BE)
 
 
-## 🪴 Branch Convention (GitHub Flow)
-- main: 배포 가능한 브랜치, 항상 배포 가능한 상태를 유지
-- feature/{description}: 새로운 기능을 개발하는 브랜치
-- 예: feature/add-login-page
-### Flow
-1. main 브랜치에서 새로운 브랜치를 생성.
-2. 작업을 완료하고 커밋 메시지에 맞게 커밋.
-3. Pull Request를 생성 / 팀원들의 리뷰.
-4. 리뷰가 완료되면 main 브랜치로 병합.
-5. 병합 후, 필요시 배포.
-예시:
-bash # 새로운 기능 개발 git checkout -b feature/add-login-page # 작업 완료 후, main 브랜치로 병합 git checkout main git pull origin main git merge feature/add-login-page git push origin main git commit -m " "
+<br>
 
-feat :
-chore :
-fix :
-build :
-..
+## 🛠 기술 스택
 
-# 📚 Course API Integration
+| **분야**      | **기술 스택**                                                                                                                                                                                                                                                                                                                             |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Frontend**  |![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=ffffff) <img src="https://img.shields.io/badge/Javascript-F7DF1E?style=flat-square&logo=javascript&logoColor=black"> |
+| **Backend**   | <img src="https://img.shields.io/badge/Java-007396?style=flat-square&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=spring&logoColor=white"> |
+| **Database**  | <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white">  |
+| **Tools**     | <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white"> <img src="https://img.shields.io/badge/Github-181717?style=flat-square&logo=github&logoColor=white"> <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white"> |
 
-## Overview
-The application now integrates with the backend course API to fetch user's registered courses from the database instead of using dummy data.
+<br>
 
-## Features
-- **Dynamic Course Loading**: Fetches courses from `/api/courses/my` endpoint
-- **Authentication**: Uses Bearer token authentication
-- **Error Handling**: Graceful error handling with retry functionality
-- **Fallback Support**: Option to use sample data if API fails
-- **Loading States**: Shows loading indicator while fetching data
+## 🚀 서비스 구현 결과
 
-## API Integration
-- **Endpoint**: `GET /api/courses/my`
-- **Authentication**: Bearer token required
-- **Response Format**: Expected to return `{ success: boolean, data: CourseResponse[] }`
+- 로그인 페이지
+<img src="https://github.com/user-attachments/assets/c705560c-bf5e-4b48-8874-96e04841fff9" alt="iPhone 13 Pro" width="500" />
+<img src="https://github.com/user-attachments/assets/f5c80d88-9f65-47a9-b039-eab447ab6bf4" alt="iPhone 13 Pro (1)" width="500" />
 
-## Usage
-1. Click the "수업추가" (Add Course) button in the timetable
-2. The system will automatically fetch courses from the database
-3. If no courses are found, you can use sample data
-4. If there's an error, you can retry or use sample data
+<br>
 
-## File Structure
-- `src/pages/Home.jsx` - Main timetable component with course integration
-- `src/utils/api.js` - API utility functions for course management
-- `src/contexts/AuthContext.jsx` - Authentication context for token management
+- 메인 페이지
+<img src="https://github.com/user-attachments/assets/5b6df96b-4d56-4ded-8b25-92749ffbbc17" alt="iPhone 13 Pro (5)" width="500" />
+<img src="https://github.com/user-attachments/assets/6e8e7e09-0f64-4a3e-873e-4004fa16d767" alt="iPhone 13 Pro (6)" width="500" />
+<br>
+
+- 커뮤니티 페이지
+<img src="https://github.com/user-attachments/assets/346f4c2c-b82c-40d3-8053-55fc7a305dfb" alt="iPhone 13 Pro (12)" width="500" />
+<img src="https://github.com/user-attachments/assets/2b124eb9-47b4-4b28-91fd-69205ddc2b95" alt="iPhone 13 Pro (13)" width="500" />
+<br>
+
+- 마이 페이지
+<img src="https://github.com/user-attachments/assets/39d34b76-c694-4462-83d2-e876795223c9" alt="iPhone 13 Pro (15)" width="500" />
+<img src="https://github.com/user-attachments/assets/066c3c21-2742-491d-9a72-6e33047b59fc" alt="iPhone 13 Pro (16)" width="500" />
+
+<br>
+
+
+
+
+
+
