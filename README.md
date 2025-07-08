@@ -44,24 +44,24 @@
 ## 🚀 서비스 구현 결과
 
 - 로그인 페이지
-<img src="https://github.com/user-attachments/assets/c705560c-bf5e-4b48-8874-96e04841fff9" alt="iPhone 13 Pro" width="500" />
-<img src="https://github.com/user-attachments/assets/f5c80d88-9f65-47a9-b039-eab447ab6bf4" alt="iPhone 13 Pro (1)" width="500" />
+<img src="https://github.com/user-attachments/assets/c705560c-bf5e-4b48-8874-96e04841fff9" alt="iPhone 13 Pro" width="400" />
+<img src="https://github.com/user-attachments/assets/f5c80d88-9f65-47a9-b039-eab447ab6bf4" alt="iPhone 13 Pro (1)" width="400" />
 
 <br>
 
 - 메인 페이지
-<img src="https://github.com/user-attachments/assets/5b6df96b-4d56-4ded-8b25-92749ffbbc17" alt="iPhone 13 Pro (5)" width="500" />
-<img src="https://github.com/user-attachments/assets/6e8e7e09-0f64-4a3e-873e-4004fa16d767" alt="iPhone 13 Pro (6)" width="500" />
+<img src="https://github.com/user-attachments/assets/5b6df96b-4d56-4ded-8b25-92749ffbbc17" alt="iPhone 13 Pro (5)" width="400" />
+<img src="https://github.com/user-attachments/assets/6e8e7e09-0f64-4a3e-873e-4004fa16d767" alt="iPhone 13 Pro (6)" width="400" />
 <br>
 
 - 커뮤니티 페이지
-<img src="https://github.com/user-attachments/assets/346f4c2c-b82c-40d3-8053-55fc7a305dfb" alt="iPhone 13 Pro (12)" width="500" />
-<img src="https://github.com/user-attachments/assets/2b124eb9-47b4-4b28-91fd-69205ddc2b95" alt="iPhone 13 Pro (13)" width="500" />
+<img src="https://github.com/user-attachments/assets/346f4c2c-b82c-40d3-8053-55fc7a305dfb" alt="iPhone 13 Pro (12)" width="400" />
+<img src="https://github.com/user-attachments/assets/2b124eb9-47b4-4b28-91fd-69205ddc2b95" alt="iPhone 13 Pro (13)" width="400" />
 <br>
 
 - 마이 페이지
-<img src="https://github.com/user-attachments/assets/39d34b76-c694-4462-83d2-e876795223c9" alt="iPhone 13 Pro (15)" width="500" />
-<img src="https://github.com/user-attachments/assets/066c3c21-2742-491d-9a72-6e33047b59fc" alt="iPhone 13 Pro (16)" width="500" />
+<img src="https://github.com/user-attachments/assets/39d34b76-c694-4462-83d2-e876795223c9" alt="iPhone 13 Pro (15)" width="400" />
+<img src="https://github.com/user-attachments/assets/066c3c21-2742-491d-9a72-6e33047b59fc" alt="iPhone 13 Pro (16)" width="400" />
 
 <br>
 
