@@ -10,12 +10,12 @@
 <br>
 
 ## 🧑‍🤝‍🧑 팀 구성원
-| <img src="https://github.com/user-attachments/assets/e7050ae6-196e-4f9c-84d6-56dd29f9ea65" width="140" /> | <img src="https://github.com/user-attachments/assets/1a67e693-c507-4790-b278-f22efc599d33" width="140" /> |
-| :-----------------: | :-----------------: |
-| **김도현**       | **오유림**      | 
-| 프론트엔드   | 프론트엔드    |
-| 서경대학교     | 서경대학교    |
-| [@kdhdd](https://github.com/kdhdd) | [@ulim006](https://github.com/ulim006) |
+| <img src="https://github.com/user-attachments/assets/e7050ae6-196e-4f9c-84d6-56dd29f9ea65" width="140" /> | <img src="https://github.com/user-attachments/assets/1a67e693-c507-4790-b278-f22efc599d33" width="140" /> | <img src="https://github.com/user-attachments/assets/fc1f76ad-1517-48d6-89ed-540867198058" width="140" /> | <img src="https://github.com/user-attachments/assets/eb48f729-1a24-41fa-9292-7a448fbb7360" width="140" /> | 
+| :-----------------: | :-----------------: | :-----------------: | :-----------------: |
+| **김도현**       | **오유림**      | **김채린**      | **고현서**      | 
+| 프론트엔드   | 프론트엔드    | 백엔드    | 백엔드    |
+| 서경대학교     | 서경대학교    | 서경대학교    | 서경대학교    |
+| [@kdhdd](https://github.com/kdhdd) | [@ulim006](https://github.com/ulim006) | [@chaeelin](https://github.com/chaeelin) | [@hyunseoko](https://github.com/hyunseoko) |
 
 ---
 
